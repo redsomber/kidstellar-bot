@@ -1,0 +1,68 @@
+{
+	"selectedGroups": [
+		{
+			"_id": "665e084e3d1f630e7c47cfb3",
+			"group_id": -1001519678828,
+			"group_username": "jobs_ge",
+			"title": "ВАКАНСИИ 🔎 Грузия",
+			"catch_count": 0,
+			"turn_on": true,
+			"createdAt": "2024-06-03T18:15:42.063Z",
+			"updatedAt": "2024-06-03T18:15:42.063Z",
+			"__v": 0
+		}
+	],
+	"selectedKeywords": [
+		{
+			"_id": "66530eaba520e5610077a090",
+			"word": "hi",
+			"catch_count": 6,
+			"turn_on": true,
+			"createdAt": "2024-05-26T10:27:55.075Z",
+			"updatedAt": "2024-06-03T18:12:31.819Z",
+			"__v": 0
+		},
+		{
+			"_id": "66530eaba520e5610077a093",
+			"word": "hello",
+			"catch_count": 0,
+			"turn_on": true,
+			"createdAt": "2024-05-26T10:27:55.083Z",
+			"updatedAt": "2024-06-03T18:12:31.822Z",
+			"__v": 0
+		}
+	],
+	"addedKeywords": [
+		"hi",
+		"hello"
+	],
+	"addedGroups": [
+		{
+			"group_id": -1002010035959,
+			"group_username": "tgtg_6666",
+			"title": "Second chat"
+		},
+		{
+			"group_id": -1002013641780,
+			"group_username": "test_tg123666",
+			"title": "Тест группа"
+		}
+	],
+	"addedUsers": [
+		{
+			"user_id": 5907229365,
+			"username": "Edo_main"
+		}
+	],
+	"selectedUsers": [
+		{
+			"_id": "665d75510f434050eb02214d",
+			"user_id": 505211008,
+			"language": "en",
+			"username": "riviute",
+			"createdAt": "2024-06-03T07:48:33.690Z",
+			"updatedAt": "2024-06-03T07:48:33.690Z",
+			"__v": 0
+		}
+	]
+}
