@@ -10,5 +10,6 @@ export default cleanEnv(process.env, {
   TOKEN: str(),
   MONGO: str(),
   BOT_ID: num(),
+  DELAY: num(),
   REBOOT: str(),
 })

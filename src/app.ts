@@ -37,6 +37,7 @@ import toggleKeywordMenu from '@/menus/toggleKeywordMenu'
 import toggleKeywords from '@/handlers/toggleKeywords'
 import watchGroups from '@/handlers/watchGroups'
 import watchKeywords from '@/handlers/watchKeywords'
+import watchUserMessages from '@/handlers/watchMessages'
 
 // Define the list of administrator user IDs
 
@@ -137,6 +138,8 @@ async function runApp() {
   await bot.init()
   run(bot)
   console.info(`Bot ${bot.botInfo.username} is up and running`)
+
+  watchUserMessages()
 }
 
 void runApp()
