@@ -139,7 +139,7 @@ async function runApp() {
   run(bot)
   console.info(`Bot ${bot.botInfo.username} is up and running`)
 
-  watchUserMessages()
+  await watchUserMessages()
 }
 
 void runApp()
