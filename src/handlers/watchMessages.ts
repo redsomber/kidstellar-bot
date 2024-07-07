@@ -47,8 +47,6 @@ export default async function watchUserMessages() {
           for (const recipient of recipients) {
             try {
               await bot.api.sendMessage(recipient.user_id, messageText)
-
-              console.log(newMessage.keyword, recipient)
             } catch (error) {
               console.error(
                 `Failed to send message to user ${recipient.user_id}`,
