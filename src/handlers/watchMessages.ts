@@ -13,8 +13,8 @@ function delay(ms: number) {
 
 const messageProcessingMutex = new Mutex()
 
-export default async function watchUserMessages() {
-  const changeStream = await UserMessageModel.watch([], {
+function createChangeStream() {
+  const changeStream = UserMessageModel.watch([], {
     fullDocument: 'updateLookup',
   })
 
@@ -25,25 +25,21 @@ export default async function watchUserMessages() {
         await messageProcessingMutex.runExclusive(async () => {
           const newMessage: UserMessage = change.fullDocument
 
-          // Fetch group and user details
           const group = await GroupModel.findOne({
             group_id: newMessage.group_id,
           })
           const user = await UserModel.findOne({ user_id: newMessage.user_id })
 
-          // Fetch all recipients (observers)
           const recipients = await RecipientModel.find().select('user_id -_id')
 
-          // Create the message text
           const messageText = messagePattern(
-            group?.title, // Assuming the new message has a title field
-            group?.group_username, // Assuming the new message has a group_username field
+            group?.title,
+            group?.group_username,
             newMessage.text,
-            user?.username, // Assuming the new message has a username field
+            user?.username,
             newMessage.keyword
           )
 
-          // Send the message to each recipient
           for (const recipient of recipients) {
             try {
               await bot.api.sendMessage(recipient.user_id, messageText)
@@ -60,7 +56,20 @@ export default async function watchUserMessages() {
     }
   )
 
-  changeStream.on('error', (error: any) => {
+  changeStream.on('error', async (error: any) => {
     console.error('Change stream error:', error)
+    if (
+      error.message.includes('The server is in quiesce mode and will shut down')
+    ) {
+      console.log('Attempting to reconnect to MongoDB...')
+      await delay(5000)
+      await createChangeStream()
+    }
   })
+
+  return changeStream
+}
+
+export default async function watchUserMessages() {
+  await createChangeStream()
 }

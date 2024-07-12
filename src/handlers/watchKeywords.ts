@@ -3,7 +3,6 @@ import { MyContext } from '@/helpers/bot'
 
 export default async function watchKeywords(ctx: MyContext) {
   try {
-    // Fetch groups sorted by catch_count in descending order
     const groups = await KeywordModel.find().sort({ catch_count: -1 }).exec()
 
     if (groups.length === 0) {
@@ -11,7 +10,6 @@ export default async function watchKeywords(ctx: MyContext) {
       return
     }
 
-    // Prepare the response
     let response = 'Текущие ключи:\n\n'
 
     groups.forEach((keyword, index) => {
@@ -21,7 +19,6 @@ export default async function watchKeywords(ctx: MyContext) {
       }\n`
     })
 
-    // Send the response
     await ctx.reply(response)
   } catch (error) {
     console.error('Error fetching group statistics:', error)

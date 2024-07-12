@@ -7,7 +7,6 @@ import { apiThrottler } from '@grammyjs/transformer-throttler'
 import { conversations, createConversation } from '@grammyjs/conversations'
 import { ignoreOld, sequentialize } from 'grammy-middlewares'
 import { run } from '@grammyjs/runner'
-// import Reboot from '@/handlers/reboot'
 import Reboot from '@/handlers/reboot'
 import addAdminMenu from '@/menus/addAdminMenu'
 import addAdmins from '@/handlers/addAdmins'
@@ -39,11 +38,8 @@ import watchGroups from '@/handlers/watchGroups'
 import watchKeywords from '@/handlers/watchKeywords'
 import watchUserMessages from '@/handlers/watchMessages'
 
-// Define the list of administrator user IDs
-
 async function runApp() {
   console.log('Starting app...')
-  // Mongo
   await startMongo()
   console.log('Mongo connected')
 

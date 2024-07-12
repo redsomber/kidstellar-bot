@@ -20,8 +20,3 @@ export class UserMessage {
 }
 
 export const UserMessageModel = getModelForClass(UserMessage)
-
-// export function logUserMessage(messageData: MessageData) {
-//   const { user_id, group_id, text, keyword } = messageData
-//   return UserMessageModel.create({ user_id, group_id, text, keyword })
-// }
