@@ -13,61 +13,68 @@ function delay(ms: number) {
 
 const messageProcessingMutex = new Mutex()
 
-function createChangeStream() {
-  const changeStream = UserMessageModel.watch([], {
-    fullDocument: 'updateLookup',
-  })
+async function handleNewMessage(change: {
+  operationType: string
+  fullDocument: any
+}) {
+  if (change.operationType === 'insert') {
+    await messageProcessingMutex.runExclusive(async () => {
+      const newMessage: UserMessage = change.fullDocument
 
-  changeStream.on(
-    'change',
-    async (change: { operationType: string; fullDocument: any }) => {
-      if (change.operationType === 'insert') {
-        await messageProcessingMutex.runExclusive(async () => {
-          const newMessage: UserMessage = change.fullDocument
+      const group = await GroupModel.findOne({
+        group_id: newMessage.group_id,
+      })
+      const user = await UserModel.findOne({ user_id: newMessage.user_id })
 
-          const group = await GroupModel.findOne({
-            group_id: newMessage.group_id,
-          })
-          const user = await UserModel.findOne({ user_id: newMessage.user_id })
+      const recipients = await RecipientModel.find().select('user_id -_id')
 
-          const recipients = await RecipientModel.find().select('user_id -_id')
+      const messageText = messagePattern(
+        group?.title,
+        group?.group_username,
+        newMessage.text,
+        user?.username,
+        newMessage.keyword
+      )
 
-          const messageText = messagePattern(
-            group?.title,
-            group?.group_username,
-            newMessage.text,
-            user?.username,
-            newMessage.keyword
+      for (const recipient of recipients) {
+        try {
+          await bot.api.sendMessage(recipient.user_id, messageText)
+        } catch (error) {
+          console.error(
+            `Failed to send message to user ${recipient.user_id}`,
+            error
           )
-
-          for (const recipient of recipients) {
-            try {
-              await bot.api.sendMessage(recipient.user_id, messageText)
-            } catch (error) {
-              console.error(
-                `Failed to send message to user ${recipient.user_id}`,
-                error
-              )
-            }
-            await delay(env.DELAY)
-          }
-        })
+        }
+        await delay(env.DELAY)
       }
-    }
-  )
+    })
+  }
+}
 
-  changeStream.on('error', async (error: any) => {
-    console.error('Change stream error:', error)
-    if (
-      error.message.includes('The server is in quiesce mode and will shut down')
-    ) {
-      console.log('Attempting to reconnect to MongoDB...')
-      await delay(5000)
-      await createChangeStream()
-    }
-  })
+async function createChangeStream() {
+  try {
+    const changeStream = UserMessageModel.watch([], {
+      fullDocument: 'updateLookup',
+    })
 
-  return changeStream
+    changeStream.on('change', handleNewMessage)
+
+    changeStream.on('error', async (error: any) => {
+      console.error('Change stream error:', error)
+      await handleStreamError(error)
+    })
+
+    return changeStream
+  } catch (error) {
+    console.error('Error creating change stream:', error)
+    await handleStreamError(error)
+  }
+}
+
+async function handleStreamError(error: any) {
+  console.log('Attempting to reconnect to MongoDB...')
+  await delay(5000) // Wait for 5 seconds before attempting to reconnect
+  await createChangeStream()
 }
 
 export default async function watchUserMessages() {
